@@ -1,0 +1,29 @@
+{
+  "name": "dockerhub-bulk-archive",
+  "version": "1.0.0",
+  "description": "A Playwright automation tool to archive multiple Docker Hub repositories in bulk",
+  "main": "index.js",
+  "scripts": {
+    "test:automation": "playwright test",
+    "test:automation:ui": "playwright test --headed",
+    "test:automation:debug": "playwright test --debug",
+    "test:automation:report": "playwright show-report",
+    "install:browsers": "playwright install chromium --with-deps"
+  },
+  "keywords": [
+    "docker",
+    "dockerhub",
+    "automation",
+    "playwright"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
