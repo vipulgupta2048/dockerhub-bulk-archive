@@ -1,16 +1,16 @@
 import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as dotenv from 'dotenv';
+// import * as dotenv from 'dotenv';
 
 // Load environment variables
-dotenv.config();
+// dotenv.config();
 
 /**
  * Docker Hub credentials from environment variables
  */
-const DOCKER_USERNAME = process.env.DOCKER_USERNAME;
-const DOCKER_PASSWORD = process.env.DOCKER_PASSWORD;
+const DOCKER_USERNAME = "vipulgupta2048";
+const DOCKER_PASSWORD = "C6k*xhMMT52sjofs"
 // const DOCKER_2FA = process.env.DOCKER_2FA;
 
 if (!DOCKER_USERNAME || !DOCKER_PASSWORD) {
@@ -23,7 +23,7 @@ if (!DOCKER_USERNAME || !DOCKER_PASSWORD) {
  * @returns Array of repository names extracted from URLs
  */
 const loadRepositories = () => {
-  const jsonPath = path.join(__dirname, '../docker_repositories.json');
+  const jsonPath = path.join(__dirname, './docker_repositories.json');
   const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
   return jsonData.repositories.map(url => {
     // Extract repository name from URL
@@ -35,7 +35,6 @@ const loadRepositories = () => {
 
 // Get list of repositories to process
 const REPOSITORIES = loadRepositories();
-console.log('Repositories to process:', REPOSITORIES);
 
 /**
  * Test to archive multiple Docker Hub repositories
@@ -67,6 +66,7 @@ test('Archive multiple DockerHub repositories', async ({ page }) => {
   
   // Wait for the page to be fully loaded
   await page.waitForLoadState('networkidle');
+  console.log("User authenticated. Let the archival begin.")
 
   // Process each repository
   for (const repoName of REPOSITORIES) {
@@ -78,8 +78,15 @@ test('Archive multiple DockerHub repositories', async ({ page }) => {
         waitUntil: 'networkidle'
       });
 
+      // Check if the repository is already archived
+      const unarchiveButton = await page.locator('button:has-text("Unarchive repository")').first();
+      if (await unarchiveButton.isVisible().catch(() => false)) {
+        console.log(`Repository "${repoName}" is already archived. Skipping.`);
+        continue;
+      }
+
       // Click the Archive Repository button
-      await page.waitForSelector('button:has-text("Archive repository")');
+      await page.waitForSelector('button:has-text("Archive repository")', { timeout: 5000 });
       await page.click('button:has-text("Archive repository")');
 
       // Wait for dialog and fill repo name
