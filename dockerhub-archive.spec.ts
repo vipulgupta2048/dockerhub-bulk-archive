@@ -9,8 +9,8 @@ import * as path from 'path';
 /**
  * Docker Hub credentials from environment variables
  */
-const DOCKER_USERNAME = "vipulgupta2048";
-const DOCKER_PASSWORD = "C6k*xhMMT52sjofs"
+const DOCKER_USERNAME = ""
+const DOCKER_PASSWORD = ""
 // const DOCKER_2FA = process.env.DOCKER_2FA;
 
 if (!DOCKER_USERNAME || !DOCKER_PASSWORD) {
