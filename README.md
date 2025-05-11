@@ -1,7 +1,6 @@
 # 🐳 DockerHub Mass Archive Tool
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js CI](https://github.com/yourusername/dockerhub-mass-archive/actions/workflows/playwright.yml/badge.svg)](https://github.com/yourusername/dockerhub-mass-archive/actions/workflows/playwright.yml)
 [![Playwright](https://img.shields.io/badge/Playwright-1.52.0-blue)](https://playwright.dev)
 
 A powerful automation tool built with Playwright to bulk archive multiple Docker Hub repositories. Perfect for cleaning up old repositories or managing large Docker Hub organizations.
