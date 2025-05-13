@@ -7,7 +7,7 @@ A powerful automation tool built with Playwright to bulk archive multiple Docker
 
 ## ✨ Features
 
-- 🔐 Secure login handling with support for 2FA
+- 🔐 Secure login handling with TOTP-based 2FA support
 - 📦 Bulk archive multiple repositories in one go
 - 🔄 Configurable repository list via JSON
 - 📊 Detailed progress tracking and logging
@@ -53,7 +53,7 @@ npm run install:browsers
 }
 ```
 
-2. Set up your Docker Hub credentials:
+2. Set up your Docker Hub credentials using the .env file:
 ```bash
 # Copy the template file
 cp env.template .env
@@ -61,6 +61,12 @@ cp env.template .env
 # Edit the .env file with your credentials
 nano .env  # or use your preferred text editor
 ```
+
+3. If you have 2FA enabled on your Docker Hub account:
+   - You'll need to set up the TOTP secret key for automated authentication
+   - See [2FA Authentication Guide](./README_2FA.md) for detailed instructions on obtaining your TOTP secret
+
+   > Note: All credentials are automatically loaded from the .env file using the dotenv package.
 
 ## 🎯 Usage
 
