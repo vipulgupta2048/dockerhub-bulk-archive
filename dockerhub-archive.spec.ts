@@ -1,20 +1,33 @@
 import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
-// import * as dotenv from 'dotenv';
+import { TOTP } from 'otpauth';
+import * as dotenv from 'dotenv';
 
-// Load environment variables
-// dotenv.config();
+// Load environment variables from .env file
+dotenv.config();
 
 /**
- * Docker Hub credentials from environment variables
+ * Docker Hub authentication credentials
+ * 
+ * DOCKER_USERNAME: Your Docker Hub username
+ * DOCKER_PASSWORD: Your Docker Hub password
+ * DOCKER_TOTP_SECRET: Your TOTP secret key for 2FA authentication
+ *   - This is NOT the 6-digit code, but the secret key used to generate those codes
+ *   - See README_2FA.md for instructions on obtaining your TOTP secret
+ * 
+ * These values are loaded from the .env file using dotenv
  */
-const DOCKER_USERNAME = ""
-const DOCKER_PASSWORD = ""
-// const DOCKER_2FA = process.env.DOCKER_2FA;
+const DOCKER_USERNAME = process.env.DOCKER_USERNAME || ""
+const DOCKER_PASSWORD = process.env.DOCKER_PASSWORD || ""
+const DOCKER_TOTP_SECRET = process.env.DOCKER_TOTP_SECRET || "" // TOTP secret for 2FA
 
 if (!DOCKER_USERNAME || !DOCKER_PASSWORD) {
   throw new Error('DOCKER_USERNAME and DOCKER_PASSWORD must be set in environment variables');
+}
+
+if (!DOCKER_TOTP_SECRET) {
+  throw new Error('DOCKER_TOTP_SECRET must be set for 2FA authentication');
 }
 
 /**
@@ -56,10 +69,34 @@ test('Archive multiple DockerHub repositories', async ({ page }) => {
   await page.fill('input[name="password"]', DOCKER_PASSWORD);
   await page.click('button[type="submit"]');
 
-  // // 4. Wait for 2FA input and fill it
-  // await page.waitForSelector('input[name="code"]', { timeout: 10000 });
-  // await page.fill('input[name="code"]', DOCKER_2FA);
-  // await page.click('button[type="submit"]');
+  // 4. Handle 2FA authentication if required
+  try {
+    // Wait for the 2FA input field to appear
+    await page.waitForSelector('input[name="code"]', { timeout: 10000 });
+    
+    // Create a TOTP object using the standard Time-based One-Time Password algorithm
+    // This is compatible with Google Authenticator, Authy, and other TOTP apps
+    const totp = new TOTP({
+      issuer: 'DockerHub',        // Service name (for reference only)
+      label: DOCKER_USERNAME,     // Account identifier (for reference only)
+      algorithm: 'SHA1',          // Standard TOTP algorithm
+      digits: 6,                  // Docker Hub uses 6-digit codes
+      period: 30,                 // Code rotates every 30 seconds
+      secret: DOCKER_TOTP_SECRET  // Secret key from your authenticator app
+    });
+    
+    // Generate a fresh TOTP code based on current time
+    const otpCode = totp.generate();
+    console.log(`Generated 2FA code for authentication`);
+    
+    // Enter the code and submit the form
+    await page.fill('input[name="code"]', otpCode);
+    await page.click('button[type="submit"]');
+  } catch (error) {
+    // 2FA prompt was not shown - either 2FA is not enabled for this account
+    // or the authentication flow has changed
+    console.log('2FA prompt not detected, continuing with login flow');
+  }
 
   // Wait for login to complete and redirect to hub.docker.com
   await page.waitForURL('https://hub.docker.com/**');
