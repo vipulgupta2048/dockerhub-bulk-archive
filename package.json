@@ -25,5 +25,9 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "otpauth": "^9.4.0"
   }
 }
