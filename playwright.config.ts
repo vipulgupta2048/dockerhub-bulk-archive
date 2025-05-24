@@ -10,8 +10,13 @@ export default defineConfig({
   reporter: 'html',
   use: {
     baseURL: 'https://hub.docker.com',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    trace: 'on',  // Capture trace for all test runs
+    screenshot: 'on',  // Capture screenshots for all test runs
+    video: 'on-first-retry',  // Capture video on first retry
+    navigationTimeout: 60000,  // Increase navigation timeout to 60 seconds
+    actionTimeout: 30000,  // Increase action timeout to 30 seconds
+    // Show browser for debugging
+    headless: false,
   },
   projects: [
     {
